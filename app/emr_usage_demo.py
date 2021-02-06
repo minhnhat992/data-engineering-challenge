@@ -4,7 +4,7 @@
 """
 Purpose
 
-Shows how to use the AWS SDK for Python (Boto3) with the Amazon EMR API to create
+Shows how to use the AWS SDK for Python (Boto3) with the Amazon EMRJob API to create
 two kinds of clusters:
     * A short-lived cluster that runs a single step to estimate the value of pi and
       then automatically terminates.
@@ -117,7 +117,7 @@ def create_roles(job_flow_role_name, service_role_name, iam_resource):
     The job flow role is assumed by the cluster's Amazon EC2 instances and grants
     them broad permission to use services like Amazon DynamoDB and Amazon S3.
 
-    The service role is assumed by Amazon EMR and grants it permission to use various
+    The service role is assumed by Amazon EMRJob and grants it permission to use various
     Amazon EC2, Amazon S3, and other actions.
 
     For demo purposes, these roles are fairly permissive. In practice, it's more
@@ -229,9 +229,9 @@ def create_security_groups(prefix, ec2_resource):
     """
     Creates Amazon EC2 security groups for the instances contained in the cluster.
 
-    When the cluster is created, Amazon EMR adds all required rules to these
+    When the cluster is created, Amazon EMRJob adds all required rules to these
     security groups. Because this demo needs only the default rules, it creates
-    empty security groups and lets Amazon EMR fill them in.
+    empty security groups and lets Amazon EMRJob fill them in.
 
     :param prefix: The name prefix for the security groups.
     :param ec2_resource: The Boto3 Amazon EC2 resource object.
@@ -252,7 +252,7 @@ def create_security_groups(prefix, ec2_resource):
     for group in groups.keys():
         try:
             groups[group] = default_vpc.create_security_group(
-                GroupName=f'{prefix}-{group}', Description=f"EMR {group} group.")
+                GroupName=f'{prefix}-{group}', Description=f"EMRJob {group} group.")
             logger.info(
                 "Created security group %s in VPC %s.",
                 groups[group].id, default_vpc.id)
@@ -315,7 +315,7 @@ def add_top_product_step(
     :param bucket: The Amazon S3 bucket that contains the script for the step and
                    that stores the output from the step.
     :param script_key: The object key of the script that identifies it in the bucket.
-    :param emr_client: The Boto3 Amazon EMR client object.
+    :param emr_client: The Boto3 Amazon EMRJob client object.
     """
     print(f"Adding a step to calculate the top {count} products in {category} that "
           f"contain the word '{keyword}'...")
@@ -347,7 +347,7 @@ def demo_short_lived_cluster():
     terminates after the step completes.
     """
     print('-' * 88)
-    print(f"Welcome to the Amazon EMR short-lived cluster demo.")
+    print(f"Welcome to the Amazon EMRJob short-lived cluster demo.")
     print('-' * 88)
 
     prefix = f'demo-short-emr'
@@ -436,7 +436,7 @@ def demo_long_lived_cluster():
     terminated.
     """
     print('-' * 88)
-    print(f"Welcome to the Amazon EMR long-lived cluster demo.")
+    print(f"Welcome to the Amazon EMRJob long-lived cluster demo.")
     print('-' * 88)
 
     prefix = 'demo-long-emr'
@@ -526,7 +526,7 @@ def demo_long_lived_cluster():
         delete_bucket(bucket)
     else:
         print(
-            f"Remember that running Amazon EMR clusters and objects kept in an "
+            f"Remember that running Amazon EMRJob clusters and objects kept in an "
             f"Amazon S3 bucket can incur charges against your account.")
     print("Thanks for watching!")
 

@@ -1,8 +1,10 @@
+import argparse
+
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
 
 
-def spark_clean_file(data_source: str):
+def spark_clean_file(data_source: str, output_uri: str):
     """process sample file
     a. Amount should be rounded up to two digits after decimal.
     b. If loan_status is Charged Off filter out those records.
@@ -32,4 +34,19 @@ def spark_clean_file(data_source: str):
                                & (clean_df['purpose'] != 'other')
                                & (clean_df['last_fico_range_low'] >= 700)
                                )
+
+    if output_uri is not None:
+        clean_df.write.mode('overwrite').csv(output_uri)
+
     return clean_df
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--data_source', default=2, type=str,
+        help="The s3 path to check data source")
+    parser.add_argument(
+        '--output_uri', help="The URI where output is saved, typically an S3 bucket.")
+    args = parser.parse_args()
+    spark_clean_file(args.data_source, args.output_uri)

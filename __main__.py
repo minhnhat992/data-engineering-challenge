@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 import boto3
 
 from app.emr import EMRJob
+from app.helpers import status_poller
 
 
 # # from emr_usage_demo import create_roles, create_security_groups
@@ -85,15 +86,23 @@ def main():
 
     # initiate cluster to run job
     cluster_id = emr_job.run_job_flow()
-    print(cluster_id)
+    print("generated job steps with cluster id {}".format(cluster_id))
 
-    # descrtip cluster
-    cluster = emr_job.describe_cluster()
-    print(cluster)
+    status_poller(
+        "Waiting for cluster, this typically takes several minutes...",
+        'RUNNING',
+        lambda: emr_job.describe_cluster()['Status']['State'],
+    )
+    status_poller(
+        "Waiting for step to complete...",
+        'PENDING',
+        lambda: emr_job.list_steps()[0]['Status']['State'])
 
-    # list steps
-    steps_submit = emr_job.list_steps()
-    print(steps_submit)
+    status_poller(
+        "Waiting for cluster to terminate.",
+        'TERMINATED',
+        lambda: emr_job.describe_cluster()['Status']['State'],
+    )
 
 
 if __name__ == '__main__':

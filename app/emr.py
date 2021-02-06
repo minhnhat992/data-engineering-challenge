@@ -7,15 +7,18 @@ Purpose
 Shows how to use the AWS SDK for Python (Boto3) with the Amazon EMRJob API to create
 and manage clusters and job steps.
 """
-
 import logging
 
 from botocore.exceptions import ClientError
+
+from app.s3 import logger
 
 logger = logging.getLogger(__name__)
 
 
 class EMRJob:
+    """Class to handle spinning up EMR cluster and run jobs"""
+
     def __init__(self, name, log_uri, keep_alive, applications, job_flow_role, service_role,
                  security_groups, steps, emr_client):
         self.security_groups = security_groups

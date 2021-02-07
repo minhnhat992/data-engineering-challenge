@@ -1,6 +1,7 @@
 from unittest.mock import MagicMock
 
 import boto3
+import yaml
 
 from app.emr import EMRJob
 from app.helpers import status_poller
@@ -54,10 +55,16 @@ from app.helpers import status_poller
 
 def main():
     global job_flow_role
+    # read from config credentials file
+    with open('config.yml') as file:
+        credentials = yaml.load(file, Loader=yaml.FullLoader)['amazon_creds']
+
+    # setup resource
     ec2_resource = boto3.resource('ec2')
     emr_client = boto3.client('emr')
     cluster_name = "test_cluster"
-    log_uri = "s3://peeriq-project/logs"
+    bucket_name = credentials['S3_Bucket_Name']
+    log_uri = f"s3://{bucket_name}/logs"
     keep_alive = False
     applications = ['Spark']
     job_flow_role = MagicMock()
@@ -66,13 +73,42 @@ def main():
     service_role.name = 'EMR_DefaultRole'
     security_groups = {'manager': ec2_resource.SecurityGroup(id='sg-01f1b29f04ab2d48c'),
                        'worker': ec2_resource.SecurityGroup(id='sg-0ed3992a09c297012')}
+
+    # creating steps
     steps = [{
         'name': 'spark_clean_file',
-        'script_uri': "s3://peeriq-project/pyspark_clean_file.py",
+        f'script_uri': f"s3://{bucket_name}/pyspark_clean_file.py",
         'script_args':
-            ['--data_source', 's3://peeriq-project/input/*.csv', '--output_uri',
-             's3://peeriq-project/output/spark_clean_file.csv']
-    }]
+            ['--data_source',
+             f's3://{bucket_name}/input/*.csv',
+             '--output_uri',
+             f's3://{bucket_name}/output/']
+    }
+        , {
+            'name': 'spark_load_file',
+            f'script_uri': f"s3://{bucket_name}/pyspark_load_file.py",
+            'script_args':
+                ['--data_source',
+                 f's3://{bucket_name}/output/*.csv',
+
+                 '--database_url',
+                 credentials['Database_Path'],
+
+                 '--database_schema',
+                 credentials['Database_Schema'],
+
+                 '--database_table',
+                 credentials['Database_Table'],
+
+                 '--database_username',
+                 credentials['Database_Username'],
+
+                 '--database_password',
+                 credentials['Database_Password'],
+                 ]
+        }]
+
+    # spin up cluster and submit
     emr_job = EMRJob(
         name=cluster_name,
         log_uri=log_uri,

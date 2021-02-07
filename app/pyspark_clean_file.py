@@ -32,11 +32,11 @@ def spark_clean_file(data_source: str, output_uri: str):
                                )
 
     if output_uri is not None:
-        pass
-        # clean_df.write.csv(output_uri,
-        #                    mode='overwrite',
-        #                    header=True,
-        #                    encoding='UTF-8')
+        # pass
+        clean_df.write.csv(output_uri,
+                           mode='overwrite',
+                           header=True,
+                           encoding='UTF-8')
 
     return clean_df
 

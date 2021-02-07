@@ -79,6 +79,7 @@ class EMRJob:
                     'HadoopJarStep': {
                         'Jar': 'command-runner.jar',
                         'Args': ['spark-submit', '--deploy-mode', 'cluster',
+                                 '--jars', 's3://peeriq-project/postgresql-42.2.18.jar',
                                  step['script_uri'], *step['script_args']]
                     }
                 } for step in self.steps],

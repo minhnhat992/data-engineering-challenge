@@ -1,7 +1,5 @@
 import os
-import subprocess
 
-import boto3
 import pytest
 from pyspark.sql import SparkSession
 
@@ -13,27 +11,27 @@ def sql_context():
     spark.stop()
 
 
+# @pytest.fixture(autouse=True, scope="session")
+# def handle_server():
+#     process = subprocess.Popen(
+#         "moto_server s3", stdout=subprocess.PIPE,
+#         shell=True
+#     )
+#     # create an s3 connection that points to the moto server.
+#     s3_conn = boto3.resource(
+#         "s3", endpoint_url="http://127.0.0.1:5000"
+#     )
+#     # create an S3 bucket.
+#     s3_conn.create_bucket(Bucket="bucket")
+
+
 @pytest.fixture(autouse=True, scope="session")
-def handle_server():
-    process = subprocess.Popen(
-        "moto_server s3", stdout=subprocess.PIPE,
-        shell=True
-    )
-    # create an s3 connection that points to the moto server.
-    s3_conn = boto3.resource(
-        "s3", endpoint_url="http://127.0.0.1:5000"
-    )
-    # create an S3 bucket.
-    s3_conn.create_bucket(Bucket="bucket")
+def spark_session():
     # configure pyspark to use hadoop-aws module.
     # notice that we reference the hadoop version we installed.
     os.environ[
         "PYSPARK_SUBMIT_ARGS"
-    ] = '--packages "org.apache.hadoop:hadoop-aws:2.7.3" pyspark-shell'
-
-
-@pytest.fixture(autouse=True, scope="session")
-def spark_session(handle_server):
+    ] = '--packages "org.apache.hadoop:hadoop-aws:2.7.4" pyspark-shell'
     spark = SparkSession.builder.getOrCreate()
     hadoop_conf = spark.sparkContext._jsc.hadoopConfiguration()
     # mock the aws credentials to access s3.

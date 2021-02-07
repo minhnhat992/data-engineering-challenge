@@ -12,8 +12,7 @@ def spark_clean_file(data_source: str, output_uri: str):
     d. If credit score is less than 700 filter out those records."""
 
     spark = SparkSession.builder.appName("Clean Files").getOrCreate()
-
-    clean_df = spark.read.load(data_source, format='csv', sep=",", inferSchema="true", header="true")
+    clean_df = spark.read.csv(data_source, header=True, inferSchema="true")
     # conver int_rate to float
     clean_df = clean_df.withColumn("int_rate", F.regexp_replace("int_rate", "%", ""))
     # df = df.withColumn("int_rate",F.col("int_rate").cast(IntegerType)/100)
@@ -38,7 +37,6 @@ def spark_clean_file(data_source: str, output_uri: str):
                            mode='overwrite',
                            header=True,
                            encoding='UTF-8')
-        # clean_df.write.mode('overwrite').csv(output_uri)
 
     return clean_df
 

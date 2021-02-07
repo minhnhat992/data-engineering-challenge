@@ -1,5 +1,3 @@
-from unittest.mock import MagicMock
-
 import boto3
 import yaml
 
@@ -21,12 +19,12 @@ def main():
     log_uri = f"s3://{bucket_name}/logs"
     keep_alive = False
     applications = ['Spark']
-    job_flow_role = MagicMock()
-    job_flow_role.name = 'EMR_EC2_DefaultRole'
-    service_role = MagicMock()
-    service_role.name = 'EMR_DefaultRole'
-    security_groups = {'manager': ec2_resource.SecurityGroup(id='sg-01f1b29f04ab2d48c'),
-                       'worker': ec2_resource.SecurityGroup(id='sg-0ed3992a09c297012')}
+    # job_flow_role = MagicMock()
+    job_flow_role = 'EMR_EC2_DefaultRole'
+    # service_role = MagicMock()
+    service_role = 'EMR_DefaultRole'
+    # security_groups = {'manager': ec2_resource.SecurityGroup(id='sg-01f1b29f04ab2d48c'),
+    #                    'worker': ec2_resource.SecurityGroup(id='sg-0ed3992a09c297012')}
 
     # creating steps
     steps = [{
@@ -72,7 +70,8 @@ def main():
         service_role=service_role,
         steps=steps,
         emr_client=emr_client,
-        security_groups=security_groups)
+        # security_groups=security_groups,
+        bucket_name=credentials['S3_Bucket_Name'])
 
     # initiate cluster to run job
     cluster_id = emr_job.run_job_flow()

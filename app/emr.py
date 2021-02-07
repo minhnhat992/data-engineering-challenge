@@ -19,9 +19,10 @@ logger = logging.getLogger(__name__)
 class EMRJob:
     """Class to handle spinning up EMR cluster and run jobs"""
 
-    def __init__(self, name, log_uri, keep_alive, applications, job_flow_role, service_role,
-                 security_groups, steps, emr_client):
-        self.security_groups = security_groups
+    def __init__(self, name, log_uri, keep_alive, applications, job_flow_role, service_role
+                 , steps, emr_client, bucket_name):
+        self.bucket_name = bucket_name
+        # self.security_groups = security_groups
         self.steps = steps
         self.emr_client = emr_client
         self.service_role = service_role
@@ -70,8 +71,8 @@ class EMRJob:
                     'SlaveInstanceType': 'm5.xlarge',
                     'InstanceCount': 3,
                     'KeepJobFlowAliveWhenNoSteps': self.keep_alive,
-                    'EmrManagedMasterSecurityGroup': self.security_groups['manager'].id,
-                    'EmrManagedSlaveSecurityGroup': self.security_groups['worker'].id,
+                    # 'EmrManagedMasterSecurityGroup': self.security_groups['manager'].id,
+                    # 'EmrManagedSlaveSecurityGroup': self.security_groups['worker'].id,
                 },
                 Steps=[{
                     'Name': step['name'],
@@ -79,15 +80,15 @@ class EMRJob:
                     'HadoopJarStep': {
                         'Jar': 'command-runner.jar',
                         'Args': ['spark-submit', '--deploy-mode', 'cluster',
-                                 '--jars', 's3://peeriq-project/postgresql-42.2.18.jar',
+                                 '--jars', f's3://{self.bucket_name}/postgresql-42.2.18.jar',
                                  step['script_uri'], *step['script_args']]
                     }
                 } for step in self.steps],
                 Applications=[{
                     'Name': app
                 } for app in self.applications],
-                JobFlowRole=self.job_flow_role.name,
-                ServiceRole=self.service_role.name,
+                JobFlowRole=self.job_flow_role,
+                ServiceRole=self.service_role,
                 EbsRootVolumeSize=10,
                 VisibleToAllUsers=True
             )

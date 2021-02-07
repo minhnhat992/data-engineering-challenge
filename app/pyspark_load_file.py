@@ -10,9 +10,7 @@ def spark_load_file(data_source: str,
                     database_username: str,
                     database_password: str):
     """load cleaned file into a postgres database"""
-    # os.environ[
-    #     "PYSPARK_SUBMIT_ARGS"
-    # ] = '--packages org.postgresql:postgresql:42.2.18 pyspark-shell'
+
     spark = SparkSession.builder.appName("Load Files").getOrCreate()
     clean_df = spark.read.csv(data_source, header=True, inferSchema="true")
     clean_df.write \

@@ -18,11 +18,10 @@ def test_create_database(spark_session):
         DBName="myDatabase",
         DBInstanceClass="db.t2.micro",
         LicenseModel="postgresql-license",
-        MasterUsername="masterUsername",
-        MasterUserPassword="lakers992#",
+        MasterUsername="root",
+        MasterUserPassword="test",
         Port=5432,
-        # DBSecurityGroups=["my_sg"],
-        VpcSecurityGroupIds=["sg-123456"],
+
     )
     db_instance = database["DBInstance"]
     db_instance["AllocatedStorage"].should.equal(10)
@@ -35,8 +34,8 @@ def test_create_database(spark_session):
                         database_url='jdbc:postgresql://database-2.cov4xcnkghe7.us-west-2.rds.amazonaws.com/myDatabase',
                         database_schema='public',
                         database_table='test_table',
-                        database_username='masterUsername',
-                        database_password='lakers992')
+                        database_username='root',
+                        database_password='test')
 
 
 def get_sorted_data_frame(data_frame, columns_list):

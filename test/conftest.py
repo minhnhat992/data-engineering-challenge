@@ -31,9 +31,12 @@ def handle_server():
 def spark_session(handle_server):
     # configure pyspark to use hadoop-aws module.
     # notice that we reference the hadoop version we installed.
+    # os.environ[
+    #     "PYSPARK_SUBMIT_ARGS"
+    # ] = '--packages "org.apache.hadoop:hadoop-aws:2.7.4" pyspark-shell'
     os.environ[
         "PYSPARK_SUBMIT_ARGS"
-    ] = '--packages "org.apache.hadoop:hadoop-aws:2.7.4" pyspark-shell'
+    ] = '--packages org.postgresql:postgresql:42.2.18 pyspark-shell'
     spark = SparkSession.builder.getOrCreate()
     hadoop_conf = spark.sparkContext._jsc.hadoopConfiguration()
     # mock the aws credentials to access s3.

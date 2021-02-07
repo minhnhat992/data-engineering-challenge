@@ -7,52 +7,6 @@ from app.emr import EMRJob
 from app.helpers import status_poller
 
 
-# # from emr_usage_demo import create_roles, create_security_groups
-# logger = logging.getLogger('example_logger')
-#
-#
-# def create_security_groups(prefix, ec2_resource):
-#     """
-#     Creates Amazon EC2 security groups for the instances contained in the cluster.
-#
-#     When the cluster is created, Amazon EMRJob adds all required rules to these
-#     security groups. Because this demo needs only the default rules, it creates
-#     empty security groups and lets Amazon EMRJob fill them in.
-#
-#     :param prefix: The name prefix for the security groups.
-#     :param ec2_resource: The Boto3 Amazon EC2 resource object.
-#     :return: The newly created security groups.
-#     """
-#     try:
-#         default_vpc = list(ec2_resource.vpcs.filter(
-#             Filters=[{'Name': 'isDefault', 'Values': ['true']}]))[0]
-#         logger.info("Got default VPC %s.", default_vpc.id)
-#     except ClientError:
-#         logger.exception("Couldn't get VPCs.")
-#         raise
-#     except IndexError:
-#         logger.exception("No default VPC in the list.")
-#         raise
-#
-#     groups = {'manager': None, 'worker': None}
-#     for group in groups.keys():
-#         try:
-#             groups[group] = default_vpc.create_security_group(
-#                 GroupName=f'{prefix}-{group}', Description=f"EMRJob {group} group.")
-#             logger.info(
-#                 "Created security group %s in VPC %s.",
-#                 groups[group].id, default_vpc.id)
-#         except ClientError:
-#             logger.exception("Couldn't create security group.")
-#             raise
-#
-#     return groups
-#
-#
-# ec2_resource = boto3.resource('ec2')
-# security_groups = create_security_groups(prefix='tg', ec2_resource=ec2_resource)
-
-
 def main():
     global job_flow_role
     # read from config credentials file

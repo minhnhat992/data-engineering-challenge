@@ -71,7 +71,7 @@ def main():
         'script_uri': "s3://peeriq-project/pyspark_clean_file.py",
         'script_args':
             ['--data_source', 's3://peeriq-project/Sample Data.csv', '--output_uri',
-             's3://peeriq-project/spark_clean_file']
+             's3://peeriq-project/spark_clean_file.csv']
     }]
     emr_job = EMRJob(
         name=cluster_name,

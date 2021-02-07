@@ -4,7 +4,7 @@ import boto3
 import pandas as pd
 from moto import mock_s3
 
-from app.pyspark_clean_file import spark_clean_file
+from app.pyspark_load_file import spark_load_file
 
 
 @mock_s3
@@ -17,8 +17,8 @@ def test_spark_clean_file(spark_session):
     # run function
     with patch('app.pyspark_clean_file.SparkSession',
                spark_session):
-        actual = spark_clean_file(data_source=f's3a://{bucket}/input/*.csv',
-                                  output_uri=f's3a://{bucket}/output.csv')
+        actual = spark_load_file(data_source=f's3a://{bucket}/input/*.csv',
+                                 output_uri=f's3a://{bucket}/output.csv')
 
         # convert to df and sort
         col_list = ['id']

@@ -8,16 +8,17 @@ from app.pyspark_clean_file import spark_clean_file
 
 @mock_s3
 def test_spark_clean_file(spark_session):
-    # set up
+    # set up mock test s3
     bucket = 'test-bucket'
     s3_client = boto3.client('s3', region_name="us-east-1", endpoint_url="http://127.0.0.1:5000")
     s3_client.create_bucket(Bucket=bucket)
-    s3_client.upload_file(Filename='sample/Sample Data.csv', Bucket=bucket, Key='Sample Data.csv')
+    s3_client.upload_file(Filename='../app/Sample Data.csv', Bucket=bucket, Key='input/Sample Data.csv')
+    s3_client.upload_file(Filename='../app/Sample Data.csv', Bucket=bucket, Key='input/Sample Data_2.csv')
 
     # run function
     with patch('app.pyspark_clean_file.SparkSession',
                spark_session):
-        actual = spark_clean_file(data_source=f's3a://{bucket}/Sample Data.csv',
+        actual = spark_clean_file(data_source=f's3a://{bucket}/input/*.csv',
                                   output_uri=f's3a://{bucket}/output.csv')
 
         # convert to df and sort

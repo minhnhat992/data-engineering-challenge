@@ -1,0 +1,9 @@
+amazon_creds:
+  S3_Bucket_Name: S3_Bucket_Name
+  Database_Path: jdbc:postgresql://[url]/[myDatabase]
+  Database_Schema: dbo
+  Database_Table: [ database_table_name ]
+  Database_Username: [ user_name ]
+  Database_Password: [ password ]
+
+

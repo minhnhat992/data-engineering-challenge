@@ -6,25 +6,19 @@ from app.helpers import status_poller
 
 
 def main():
-    global job_flow_role
     # read from config credentials file
-    with open('config.yml') as file:
+    with open('../config.yml') as file:
         credentials = yaml.load(file, Loader=yaml.FullLoader)['amazon_creds']
 
     # setup resource
-    ec2_resource = boto3.resource('ec2')
     emr_client = boto3.client('emr')
     cluster_name = "test_cluster"
     bucket_name = credentials['S3_Bucket_Name']
     log_uri = f"s3://{bucket_name}/logs"
     keep_alive = False
     applications = ['Spark']
-    # job_flow_role = MagicMock()
     job_flow_role = 'EMR_EC2_DefaultRole'
-    # service_role = MagicMock()
     service_role = 'EMR_DefaultRole'
-    # security_groups = {'manager': ec2_resource.SecurityGroup(id='sg-01f1b29f04ab2d48c'),
-    #                    'worker': ec2_resource.SecurityGroup(id='sg-0ed3992a09c297012')}
 
     # creating steps
     steps = [{

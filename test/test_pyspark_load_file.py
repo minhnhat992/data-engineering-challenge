@@ -31,7 +31,7 @@ def test_create_database(spark_session):
     with patch('app.pyspark_load_file.SparkSession',
                spark_session):
         spark_load_file(data_source='sample/Sample Data.csv',
-                        database_url='jdbc:postgresql://database-2.cov4xcnkghe7.us-west-2.rds.amazonaws.com/myDatabase',
+                        database_url='jdbc:postgresql://ddb-master-1.us-west-2.rds.amazonaws.com/myDatabase',
                         database_schema='public',
                         database_table='test_table',
                         database_username='root',
